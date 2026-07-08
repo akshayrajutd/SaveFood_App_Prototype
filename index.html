@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SaveFood — Food Rescue & Relief Platform</title>
+<style>
+/* ─── ECO DESIGN TOKENS ─── */
+:root {
+  --moss:       #2D5016;
+  --fern:       #3E7B1E;
+  --leaf:       #5A9E35;
+  --sprout:     #7ABF52;
+  --mist:       #C8E6A8;
+  --fog:        #EDF7E3;
+  --earth:      #6B4226;
+  --clay:       #A0522D;
+  --wheat:      #D4A853;
+  --straw:      #F5E6C0;
+  --parchment:  #FDFAF3;
+  --bark:       #3D2B1F;
+  --stone:      #8B8680;
+  --pebble:     #C5C0BB;
+  --cloud:      #F7F5F0;
+  --white:      #FFFFFF;
+  --urgent:     #C0392B;
+  --warn:       #E67E22;
+  --safe:       #27AE60;
+
+  --r-xl: 20px;
+  --r-lg: 14px;
+  --r-md: 10px;
+  --r-sm: 6px;
+
+  --shadow-card: 0 2px 12px rgba(45,80,22,.10);
+  --shadow-float: 0 8px 28px rgba(45,80,22,.18);
+
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: #1a1a18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+/* ─── PHONE SHELL ─── */
+.phone {
+  width: 390px;
+  height: 844px;
+  background: var(--parchment);
+  border-radius: 48px;
+  box-shadow: 0 0 0 12px #111, 0 0 0 14px #333, 0 24px 80px rgba(0,0,0,.7);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.phone-notch {
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 126px; height: 34px;
+  background: #111;
+  border-radius: 0 0 20px 20px;
+  z-index: 100;
+}
+
+/* ─── SCREEN SYSTEM ─── */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 40px;
+  background: var(--parchment);
+  display: none;
+  flex-direction: column;
+}
+
+.screen.active { display: flex; }
+
+.screen::-webkit-scrollbar { display: none; }
+
+/* ─── NAVIGATION ─── */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--white);
+  padding: 12px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(45,80,22,.1);
+}
+
+.nav-back {
+  width: 36px; height: 36px;
+  border: none; background: var(--fog);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--moss);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.nav-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--bark);
+  flex: 1;
+}
+
+.nav-logo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--moss);
+  letter-spacing: -0.5px;
+}
+
+.nav-logo span { color: var(--wheat); }
+
+/* ─── BOTTOM TAB BAR ─── */
+.tab-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--white);
+  border-top: 1px solid rgba(45,80,22,.1);
+  display: flex;
+  padding: 8px 0 20px;
+  z-index: 50;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px;
+  border: none;
+  background: transparent;
+}
+
+.tab-icon { font-size: 22px; }
+.tab-label { font-size: 10px; color: var(--stone); font-weight: 500; }
+.tab-item.active .tab-label { color: var(--fern); }
+.tab-item.active .tab-icon { filter: none; }
+
+/* ─── CONTENT WRAPPERS ─── */
+.content { padding: 0 16px 16px; flex: 1; }
+.content-full { flex: 1; overflow: hidden; }
+
+/* ─── SPLASH ─── */
+#splash {
+  background: linear-gradient(160deg, var(--moss) 0%, var(--fern) 55%, var(--leaf) 100%);
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+}
+
+.splash-leaf {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.splash-title {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: -1px;
+}
+
+.splash-title span { color: var(--wheat); }
+.splash-tagline {
+  font-size: 14px;
+  color: rgba(255,255,255,.75);
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+
+.splash-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 48px;
+}
+
+.splash-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.4);
+}
+
+.splash-dot.active { background: var(--wheat); width: 24px; border-radius: 4px; }
+
+/* ─── ROLE SELECTION ─── */
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+
+.role-card {
+  background: var(--white);
+  border: 2px solid transparent;
+  border-radius: var(--r-xl);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: var(--shadow-card);
+}
+
+.role-card:hover, .role-card.selected {
+  border-color: var(--leaf);
+  background: var(--fog);
+}
+
+.role-icon { font-size: 36px; }
+.role-name { font-size: 13px; font-weight: 700; color: var(--bark); text-align: center; }
+.role-desc { font-size: 11px; color: var(--stone); text-align: center; line-height: 1.4; }
+
+/* ─── HERO SECTION ─── */
+.hero {
+  background: linear-gradient(135deg, var(--moss) 0%, var(--fern) 100%);
+  padding: 24px 20px 28px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+}
+
+.hero-greeting { font-size: 13px; color: rgba(255,255,255,.7); }
+.hero-name { font-size: 22px; font-weight: 800; margin-top: 2px; }
+.hero-subtitle { font-size: 12px; color: rgba(255,255,255,.65); margin-top: 4px; }
+
+.hero-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.hero-stat {
+  background: rgba(255,255,255,.12);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  flex: 1;
+}
+
+.hero-stat-num { font-size: 22px; font-weight: 800; }
+.hero-stat-label { font-size: 10px; color: rgba(255,255,255,.7); margin-top: 2px; }
+
+/* ─── SECTION HEADERS ─── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 10px;
+}
+
+.section-title { font-size: 16px; font-weight: 700; color: var(--bark); }
+.section-action { font-size: 12px; color: var(--fern); font-weight: 600; cursor: pointer; }
+
+/* ─── FOOD CARDS ─── */
+.food-card {
+  background: var(--white);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform .15s;
+}
+
+.food-card:active { transform: scale(.98); }
+
+.food-card-image {
+  height: 140px;
+  background: linear-gradient(135deg, var(--mist) 0%, var(--straw) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  position: relative;
+}
+
+.food-card-badges {
+  position: absolute;
+  top: 10px; left: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+.food-card-body { padding: 14px 16px; }
+.food-card-name { font-size: 16px; font-weight: 700; color: var(--bark); }
+.food-card-restaurant { font-size: 12px; color: var(--stone); margin-top: 2px; }
+
+.food-card-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.food-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--cloud);
+}
+
+.food-card-distance { font-size: 12px; color: var(--stone); }
+.food-card-time { font-size: 12px; color: var(--warn); font-weight: 600; }
+
+/* ─── BADGES / CHIPS ─── */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-green { background: var(--fog); color: var(--moss); }
+.badge-orange { background: #FEF0DC; color: #A05A00; }
+.badge-red { background: #FDEAEA; color: var(--urgent); }
+.badge-wheat { background: var(--straw); color: var(--earth); }
+.badge-white { background: var(--white); color: var(--bark); }
+
+/* ─── FRESHNESS METER ─── */
+.freshness-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--cloud);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.freshness-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .4s;
+}
+
+.fresh-excellent { background: var(--safe); }
+.fresh-good { background: var(--leaf); }
+.fresh-soon { background: var(--warn); }
+.fresh-danger { background: var(--urgent); }
+
+/* ─── BUTTONS ─── */
+.btn {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: var(--r-xl);
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary { background: var(--fern); color: var(--white); }
+.btn-primary:active { background: var(--moss); transform: scale(.98); }
+.btn-secondary { background: var(--fog); color: var(--fern); }
+.btn-danger { background: var(--urgent); color: var(--white); }
+.btn-outline { background: transparent; border: 2px solid var(--fern); color: var(--fern); }
+.btn-wheat { background: var(--wheat); color: var(--bark); }
+.btn-sm { padding: 10px 16px; font-size: 13px; border-radius: var(--r-lg); width: auto; }
+
+/* ─── FORM INPUTS ─── */
+.input-group { margin-bottom: 14px; }
+.input-label { font-size: 13px; font-weight: 600; color: var(--bark); margin-bottom: 6px; display: block; }
+.input-field {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--pebble);
+  border-radius: var(--r-lg);
+  font-size: 14px;
+  background: var(--white);
+  color: var(--bark);
+  outline: none;
+  transition: border-color .2s;
+}
+
+.input-field:focus { border-color: var(--leaf); }
+
+/* ─── MAP MOCK ─── */
+.map-mock {
+  background: linear-gradient(145deg, #D8F0C0 0%, #C5E8A8 30%, #B8E090 60%, #A8D47A 100%);
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.map-roads {
+  position: absolute;
+  inset: 0;
+  opacity: .35;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.6) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(200,230,150,.8) 2px, transparent 2px),
+    linear-gradient(55deg, rgba(200,230,150,.8) 2px, transparent 2px);
+  background-size: 60px 60px, 60px 60px, 80px 80px, 70px 70px;
+}
+
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.map-pin-dot {
+  width: 40px; height: 40px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,.25);
+}
+
+.map-pin-dot span {
+  transform: rotate(45deg);
+  font-size: 18px;
+}
+
+.map-pin-label {
+  background: var(--white);
+  color: var(--bark);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-top: 4px;
+  box-shadow: var(--shadow-card);
+  white-space: nowrap;
+}
+
+.pin-green .map-pin-dot { background: var(--fern); }
+.pin-orange .map-pin-dot { background: var(--warn); }
+.pin-blue .map-pin-dot { background: #2980B9; }
+.pin-wheat .map-pin-dot { background: var(--wheat); }
+
+.map-overlay-card {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: 16px 16px 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.12);
+}
+
+.map-overlay-handle {
+  width: 40px; height: 4px;
+  background: var(--pebble);
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+
+/* ─── STATUS TRACKER ─── */
+.status-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 16px 0;
+}
+
+.status-step {
+  display: flex;
+  gap: 14px;
+  position: relative;
+}
+
+.status-step::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: -8px;
+  width: 2px;
+  background: var(--cloud);
+}
+
+.status-step:last-child::before { display: none; }
+.status-step.done::before { background: var(--leaf); }
+
+.status-dot {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--cloud);
+  border: 2px solid var(--pebble);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  z-index: 1;
+}
+
+.status-step.done .status-dot { background: var(--fern); border-color: var(--fern); color: white; }
+.status-step.active .status-dot { background: var(--wheat); border-color: var(--wheat); animation: pulse .8s ease-in-out infinite; }
+
+.status-info { padding-bottom: 20px; }
+.status-label { font-size: 14px; font-weight: 700; color: var(--bark); }
+.status-sub { font-size: 12px; color: var(--stone); margin-top: 2px; }
+
+/* ─── FRIDGE COMPONENT ─── */
+.fridge-card {
+  background: var(--white);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.fridge-header {
+  background: linear-gradient(135deg, #1B4D6B 0%, #2980B9 100%);
+  padding: 16px 18px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fridge-icon { font-size: 32px; }
+.fridge-name { font-size: 16px; font-weight: 700; }
+.fridge-loc { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 2px; }
+
+.fridge-body { padding: 14px 18px; }
+
+.fridge-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.fridge-slot {
+  aspect-ratio: 1;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 1.5px solid transparent;
+}
+
+.slot-full { background: var(--fog); border-color: var(--mist); }
+.slot-empty { background: var(--cloud); border-color: var(--pebble); opacity: .4; }
+.slot-warn { background: #FEF0DC; border-color: #F0C070; }
+.slot-danger { background: #FDEAEA; border-color: #E0A0A0; }
+
+/* ─── SENSOR PANEL ─── */
+.sensor-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cloud);
+}
+
+.sensor-row:last-child { border-bottom: none; }
+.sensor-icon { font-size: 22px; flex-shrink: 0; }
+.sensor-info { flex: 1; }
+.sensor-name { font-size: 13px; font-weight: 600; color: var(--bark); }
+.sensor-value { font-size: 12px; color: var(--stone); margin-top: 2px; }
+.sensor-badge { flex-shrink: 0; }
+
+/* ─── COUNTDOWN TIMER ─── */
+.timer-card {
+  background: linear-gradient(135deg, var(--wheat) 0%, #E8A020 100%);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  text-align: center;
+  color: var(--bark);
+  margin: 12px 0;
+}
+
+.timer-label { font-size: 12px; font-weight: 600; opacity: .75; }
+.timer-clock { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin: 8px 0; }
+.timer-sub { font-size: 11px; opacity: .7; }
+
+/* ─── DONOR METER ─── */
+.donation-meter {
+  background: var(--white);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 12px;
+}
+
+.meter-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+.meter-raised { font-size: 26px; font-weight: 800; color: var(--moss); }
+.meter-goal { font-size: 13px; color: var(--stone); }
+.meter-track { height: 12px; background: var(--cloud); border-radius: 6px; overflow: hidden; }
+.meter-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--leaf), var(--wheat)); transition: width .6s; }
+.meter-footer { display: flex; justify-content: space-between; margin-top: 8px; }
+.meter-pct { font-size: 13px; font-weight: 700; color: var(--fern); }
+.meter-donors { font-size: 12px; color: var(--stone); }
+
+/* ─── IMPACT STATS ─── */
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.impact-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.impact-num { font-size: 28px; font-weight: 900; color: var(--fern); }
+.impact-label { font-size: 11px; color: var(--stone); margin-top: 4px; line-height: 1.3; }
+
+/* ─── NOTIFICATION ─── */
+.notif-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+}
+
+.notif-icon-wrap {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.notif-text { flex: 1; }
+.notif-title { font-size: 13px; font-weight: 700; color: var(--bark); }
+.notif-body { font-size: 12px; color: var(--stone); margin-top: 2px; line-height: 1.4; }
+.notif-time { font-size: 11px; color: var(--pebble); margin-top: 4px; }
+.notif-unread { width: 8px; height: 8px; border-radius: 50%; background: var(--fern); flex-shrink: 0; margin-top: 6px; }
+
+/* ─── PROFILE CARD ─── */
+.profile-head {
+  background: linear-gradient(135deg, var(--moss), var(--fern));
+  padding: 32px 20px 24px;
+  text-align: center;
+  color: white;
+}
+
+.profile-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 12px;
+  border: 3px solid rgba(255,255,255,.4);
+}
+
+.profile-name { font-size: 20px; font-weight: 800; }
+.profile-role { font-size: 13px; color: rgba(255,255,255,.7); margin-top: 4px; }
+
+/* ─── QR CODE MOCK ─── */
+.qr-mock {
+  width: 160px; height: 160px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: 16px;
+  box-shadow: var(--shadow-float);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 2px;
+}
+
+.qr-cell {
+  border-radius: 2px;
+}
+
+/* ─── SUCCESS STATE ─── */
+.success-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  flex: 1;
+}
+
+.success-icon {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: var(--fog);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  margin-bottom: 24px;
+  border: 3px solid var(--mist);
+}
+
+.success-title { font-size: 24px; font-weight: 800; color: var(--bark); }
+.success-sub { font-size: 14px; color: var(--stone); margin-top: 8px; line-height: 1.6; }
+
+/* ─── DIVIDER ─── */
+.divider { height: 1px; background: var(--cloud); margin: 12px 0; }
+.divider-thick { height: 8px; background: var(--cloud); margin: 4px -16px; }
+
+/* ─── TAGS ─── */
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--fog);
+  color: var(--moss);
+}
+
+.tag-veg { background: #E8F8E8; color: #1A7A1A; }
+.tag-nonveg { background: #FEE8E8; color: #8B0000; }
+.tag-allergen { background: var(--straw); color: var(--earth); }
+
+/* ─── USAGE BAR ─── */
+.usage-item {
+  margin-bottom: 14px;
+}
+
+.usage-label-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.usage-name { font-size: 13px; font-weight: 600; color: var(--bark); }
+.usage-pct { font-size: 12px; color: var(--stone); }
+.usage-bar { height: 8px; background: var(--cloud); border-radius: 4px; overflow: hidden; }
+.usage-fill { height: 100%; border-radius: 4px; }
+
+/* ─── TOGGLE NAVIGATION PILL ─── */
+.view-toggle {
+  display: flex;
+  background: var(--cloud);
+  border-radius: 30px;
+  padding: 3px;
+  margin: 12px 16px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--stone);
+  transition: all .2s;
+}
+
+.toggle-btn.active {
+  background: var(--white);
+  color: var(--fern);
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+/* ─── UTILITY ─── */
+.gap-8 { gap: 8px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.text-sm { font-size: 12px; color: var(--stone); }
+.text-center { text-align: center; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.fw-700 { font-weight: 700; }
+.text-bark { color: var(--bark); }
+.text-moss { color: var(--moss); }
+.text-fern { color: var(--fern); }
+.text-warn { color: var(--warn); }
+.text-urgent { color: var(--urgent); }
+.px-16 { padding-left: 16px; padding-right: 16px; }
+
+/* ─── SIDEBAR LEGEND ─── */
+.legend {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(20,20,18,.85);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 16px;
+  color: white;
+  max-width: 180px;
+  font-size: 12px;
+}
+
+.legend h4 { font-size: 13px; font-weight: 700; color: var(--wheat); margin-bottom: 12px; }
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  cursor: pointer;
+  opacity: .7;
+  transition: opacity .2s;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.legend-item:hover { opacity: 1; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+@media (max-width: 700px) {
+  .legend { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ─────────────── PHONE ─────────────── -->
+<div class="phone">
+  <div class="phone-notch"></div>
+
+  <!-- ═══════════════════════════════════ SPLASH ═══ -->
+  <div class="screen active" id="splash">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 30px;">
+      <div class="splash-leaf">🌿</div>
+      <div class="splash-title">Save<span>Food</span></div>
+      <div class="splash-tagline">Rescue food. Feed neighbors. Fight waste.</div>
+      <div class="splash-dots" style="margin-top:40px;">
+        <div class="splash-dot active"></div>
+        <div class="splash-dot"></div>
+        <div class="splash-dot"></div>
+      </div>
+    </div>
+    <div style="padding:32px 24px 48px;">
+      <button class="btn btn-primary" onclick="go('role-select')">Get Started</button>
+      <button class="btn btn-secondary" style="margin-top:10px;" onclick="go('login')">I already have an account</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ LOGIN ═══ -->
+  <div class="screen" id="login">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('splash')">←</button>
+      <span class="nav-title">Sign In</span>
+    </div>
+    <div class="content" style="padding-top:24px;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:36px;">🌿</div>
+        <div style="font-size:22px;font-weight:800;color:var(--bark);margin-top:8px;">Welcome back</div>
+        <div class="text-sm" style="margin-top:4px;">Sign in to your SaveFood account</div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Email or Phone</label>
+        <input class="input-field" type="text" placeholder="you@example.com" value="priya@example.com">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <input class="input-field" type="password" placeholder="••••••••" value="••••••••">
+      </div>
+      <div style="text-align:right;margin-bottom:20px;">
+        <span style="font-size:12px;color:var(--fern);font-weight:600;cursor:pointer;">Forgot password?</span>
+      </div>
+      <button class="btn btn-primary" onclick="go('role-select')">Sign In</button>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--stone);">
+        New here? <span style="color:var(--fern);font-weight:700;cursor:pointer;" onclick="go('role-select')">Create account</span>
+      </div>
+      <div class="divider" style="margin:20px 0;position:relative;text-align:center;">
+        <span style="background:var(--parchment);padding:0 12px;font-size:12px;color:var(--stone);position:relative;z-index:1;">or continue with</span>
+        <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:var(--cloud);z-index:0;"></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary btn-sm" style="flex:1;font-size:13px;">🔵 Google</button>
+        <button class="btn btn-secondary btn-sm" style="flex:1;font-size:13px;">🍎 Apple</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ ROLE SELECT ═══ -->
+  <div class="screen" id="role-select">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('splash')">←</button>
+      <span class="nav-title">Who are you?</span>
+    </div>
+    <div style="padding:16px 16px 0;">
+      <div style="font-size:22px;font-weight:800;color:var(--bark);">Choose your role</div>
+      <div class="text-sm" style="margin-top:6px;">Your dashboard and features will be tailored to your role.</div>
+    </div>
+    <div class="role-grid">
+      <div class="role-card" onclick="go('restaurant-dashboard')">
+        <div class="role-icon">🍽️</div>
+        <div class="role-name">Restaurant</div>
+        <div class="role-desc">Post leftover food for pickup or fridge drop-off</div>
+      </div>
+      <div class="role-card" onclick="go('ngo-dashboard')">
+        <div class="role-icon">🤝</div>
+        <div class="role-name"> Nonprofit</div>
+        <div class="role-desc">Collect, store, and distribute rescued food</div>
+      </div>
+      <div class="role-card" onclick="go('user-discovery')">
+        <div class="role-icon">🎒</div>
+        <div class="role-name">Recipient</div>
+        <div class="role-desc">Find nearby free food for yourself or family</div>
+      </div>
+      <div class="role-card" onclick="go('donor-discover')">
+        <div class="role-icon">💚</div>
+        <div class="role-name">Donor</div>
+        <div class="role-desc">Support NGOs with transparent fund tracking</div>
+      </div>
+    </div>
+    <div style="padding:0 16px 32px;">
+      <div class="text-sm" style="text-align:center;">
+        By continuing you agree to our <span style="color:var(--fern);font-weight:600;">Terms</span> and <span style="color:var(--fern);font-weight:600;">Food Safety Policy</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ RESTAURANT DASHBOARD ═══ -->
+  <div class="screen" id="restaurant-dashboard">
+    <div class="hero">
+      <div class="hero-greeting">🌿 SaveFood — Restaurant</div>
+      <div class="hero-name">Green Leaf Bistro</div>
+      <div class="hero-subtitle">Verified Partner · Chicago, IL</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">148</div>
+          <div class="hero-stat-label">Meals rescued</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">93 lbs</div>
+          <div class="hero-stat-label">Waste reduced</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">3</div>
+          <div class="hero-stat-label">Active listings</div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <button class="btn btn-wheat" style="margin-top:16px;" onclick="go('create-listing')">＋ Post Leftover Food</button>
+
+      <div class="section-header">
+        <span class="section-title">Active Listings</span>
+        <span class="section-action">View all</span>
+      </div>
+
+      <div class="food-card" onclick="go('listing-status')">
+        <div class="food-card-image">
+          🍛
+          <div class="food-card-badges">
+            <span class="badge badge-orange">⏱ 2h left</span>
+            <span class="badge badge-green">Nonprofit Pickup</span>
+          </div>
+        </div>
+        <div class="food-card-body">
+          <div class="food-card-name">Chicken Tikka Masala</div>
+          <div class="food-card-restaurant">Posted 45 min ago · serves ~20 people</div>
+          <div class="food-card-meta">
+            <span class="badge badge-green">🌱 Veg</span>
+            <span class="badge badge-wheat">Freshness 92%</span>
+          </div>
+          <div class="food-card-footer">
+            <span class="food-card-distance">📦 17 lbs available</span>
+            <span class="food-card-time">⚡ Nonprofit en route</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="food-card">
+        <div class="food-card-image" style="background:linear-gradient(135deg,#F5E8D0,#EDD5A8);">
+          🥗
+          <div class="food-card-badges">
+            <span class="badge badge-orange">⏱ 1h left</span>
+          </div>
+        </div>
+        <div class="food-card-body">
+          <div class="food-card-name">Mixed Green Salad</div>
+          <div class="food-card-restaurant">Posted 1h ago · serves ~12 people</div>
+          <div class="food-card-meta">
+            <span class="badge badge-green">🌱 Veg</span>
+            <span class="badge badge-white">Smart Fridge</span>
+          </div>
+          <div class="food-card-footer">
+            <span class="food-card-distance">📦 9 lbs available</span>
+            <span class="food-card-time">⚠ Unclaimed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span class="section-title">This Month's Impact</span>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-num">148</div>
+          <div class="impact-label">Meals rescued</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-num">93 lbs</div>
+          <div class="impact-label">Waste diverted</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-num">6</div>
+          <div class="impact-label">Nonprofit partners</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-num">$0</div>
+          <div class="impact-label">Platform fee</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
+      <button class="tab-item" onclick="go('create-listing')"><span class="tab-icon">＋</span><span class="tab-label">Post</span></button>
+      <button class="tab-item" onclick="go('listing-status')"><span class="tab-icon">📋</span><span class="tab-label">Listings</span></button>
+      <button class="tab-item" onclick="go('notifications')"><span class="tab-icon">🔔</span><span class="tab-label">Alerts</span></button>
+      <button class="tab-item" onclick="go('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ CREATE LISTING ═══ -->
+  <div class="screen" id="create-listing">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('restaurant-dashboard')">←</button>
+      <span class="nav-title">Post Leftover Food</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div style="background:var(--fog);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:16px;border-left:3px solid var(--leaf);">
+        <div style="font-size:12px;color:var(--moss);font-weight:600;">🌿 Tip: Food listed within 30 min gets 3× faster pickup</div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Food Name</label>
+        <input class="input-field" value="Chicken Tikka Masala" placeholder="e.g. Mac &amp; Cheese, Sandwiches, etc.">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="input-group">
+          <label class="input-label">Quantity (lbs)</label>
+          <input class="input-field" value="8" type="number">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Serves ~</label>
+          <input class="input-field" value="20" type="number">
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Category</label>
+        <select class="input-field">
+          <option selected>Rice / Grain</option>
+          <option>Bread / Roti</option>
+          <option>Dal / Curry</option>
+          <option>Salad / Raw</option>
+          <option>Dessert</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Diet Type</label>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;padding:12px;border:2px solid var(--leaf);border-radius:var(--r-md);text-align:center;background:var(--fog);cursor:pointer;">
+            <div style="font-size:18px;">🌱</div>
+            <div style="font-size:12px;font-weight:700;color:var(--moss);">Vegetarian</div>
+          </div>
+          <div style="flex:1;padding:12px;border:2px solid var(--pebble);border-radius:var(--r-md);text-align:center;cursor:pointer;">
+            <div style="font-size:18px;">🍗</div>
+            <div style="font-size:12px;font-weight:600;color:var(--stone);">Non-Veg</div>
+          </div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Allergens (select all that apply)</label>
+        <div class="tag-row">
+          <span class="tag tag-allergen" style="cursor:pointer;">🥜 Nuts</span>
+          <span class="tag" style="cursor:pointer;">🌾 Gluten</span>
+          <span class="tag" style="cursor:pointer;">🥛 Dairy</span>
+          <span class="tag" style="cursor:pointer;">🥚 Eggs</span>
+          <span class="tag" style="cursor:pointer;">🐟 Fish</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Pickup Mode</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--leaf);border-radius:var(--r-md);background:var(--fog);cursor:pointer;">
+            <span style="font-size:20px;">🤝</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--bark);">Nonprofit Pickup</div>
+              <div style="font-size:11px;color:var(--stone);">Nonprofit comes to your location</div>
+            </div>
+            <span style="margin-left:auto;color:var(--leaf);">✓</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--pebble);border-radius:var(--r-md);cursor:pointer;">
+            <span style="font-size:20px;">🧊</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--bark);">Smart Fridge Drop-off</div>
+              <div style="font-size:11px;color:var(--stone);">You deliver to nearby Nonprofit fridge</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--pebble);border-radius:var(--r-md);cursor:pointer;">
+            <span style="font-size:20px;">🎒</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--bark);">Direct User Pickup</div>
+              <div style="font-size:11px;color:var(--stone);">Community members collect directly</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Pickup Deadline</label>
+        <input class="input-field" type="time" value="22:30">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Food Photo</label>
+        <div style="border:2px dashed var(--mist);border-radius:var(--r-lg);padding:24px;text-align:center;background:var(--fog);cursor:pointer;">
+          <div style="font-size:28px;">📸</div>
+          <div style="font-size:13px;color:var(--stone);margin-top:6px;">Tap to upload photo</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="go('listing-status')" style="margin-top:8px;">Post Food Listing →</button>
+      <div style="height:24px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ LISTING STATUS ═══ -->
+  <div class="screen" id="listing-status">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('restaurant-dashboard')">←</button>
+      <span class="nav-title">Pickup Status</span>
+    </div>
+    <div class="content">
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:16px;box-shadow:var(--shadow-card);margin-top:16px;">
+        <div style="font-size:18px;font-weight:800;color:var(--bark);">🍱 Chicken Tikka Masala</div>
+        <div class="text-sm" style="margin-top:4px;">17 lbs · ~20 people · Nonprofit Pickup</div>
+        <div style="margin-top:10px;">
+          <div class="freshness-bar"><div class="freshness-fill fresh-excellent" style="width:92%;"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:11px;color:var(--stone);">Freshness Score</span>
+            <span style="font-size:11px;font-weight:700;color:var(--safe);">92% — Excellent</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-track" style="margin-top:4px;">
+        <div class="status-step done">
+          <div class="status-dot">✓</div>
+          <div class="status-info">
+            <div class="status-label">Listing Posted</div>
+            <div class="status-sub">6:45 PM · Visible to nearby nonprofits</div>
+          </div>
+        </div>
+        <div class="status-step done">
+          <div class="status-dot">✓</div>
+          <div class="status-info">
+            <div class="status-label">Nonprofit Accepted</div>
+            <div class="status-sub">Feed Chicago Network · 7:02 PM</div>
+          </div>
+        </div>
+        <div class="status-step active">
+          <div class="status-dot">🚗</div>
+          <div class="status-info">
+            <div class="status-label">Nonprofit En Route</div>
+            <div class="status-sub">Arriving in ~12 min · Tracking live</div>
+          </div>
+        </div>
+        <div class="status-step">
+          <div class="status-dot">📦</div>
+          <div class="status-info">
+            <div class="status-label">Food Picked Up</div>
+            <div class="status-sub">Pending</div>
+          </div>
+        </div>
+        <div class="status-step">
+          <div class="status-dot">✅</div>
+          <div class="status-info">
+            <div class="status-label">Delivered / Distributed</div>
+            <div class="status-sub">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--fog);border-radius:var(--r-lg);padding:14px;border:1px solid var(--mist);">
+        <div style="font-size:13px;font-weight:700;color:var(--bark);">🤝 Feed Chicago Network</div>
+        <div class="text-sm" style="margin-top:4px;">Verified Nonprofit · 0.7 mi away · Est. arrival 7:24 PM</div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-secondary btn-sm">📞 Call</button>
+          <button class="btn btn-primary btn-sm" onclick="go('handoff')">Confirm Handoff ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ HANDOFF ═══ -->
+  <div class="screen" id="handoff">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('listing-status')">←</button>
+      <span class="nav-title">Confirm Handoff</span>
+    </div>
+    <div class="success-screen">
+      <div class="success-icon">🤝</div>
+      <div class="success-title">Food Handed Over!</div>
+      <div class="success-sub">You successfully handed 17 lbs of Chicken Tikka Masala to Feed Chicago Network.<br><br>This will serve approximately 20 people tonight.</div>
+      <div class="impact-grid" style="width:100%;margin-top:24px;">
+        <div class="impact-card"><div class="impact-num">+20</div><div class="impact-label">Meals saved today</div></div>
+        <div class="impact-card"><div class="impact-num">17 lbs</div><div class="impact-label">Waste avoided</div></div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:24px;width:100%;" onclick="go('restaurant-dashboard')">Back to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ Nonprofit DASHBOARD ═══ -->
+  <div class="screen" id="ngo-dashboard">
+    <div class="hero">
+      <div class="hero-greeting">🌿 SaveFood — Nonprofit</div>
+      <div class="hero-name">Feed Chicago Network</div>
+      <div class="hero-subtitle">Verified Nonprofit · 3 fridges active · Chicago</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">2,140</div>
+          <div class="hero-stat-label">Meals this month</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">$9.6k</div>
+          <div class="hero-stat-label">Donations raised</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-toggle">
+      <button class="toggle-btn active" id="ngo-map-btn" onclick="ngoView('map')">🗺 Map</button>
+      <button class="toggle-btn" id="ngo-list-btn" onclick="ngoView('list')">📋 Listings</button>
+      <button class="toggle-btn" id="ngo-fridge-btn" onclick="ngoView('fridge')">🧊 Fridges</button>
+    </div>
+
+    <div id="ngo-map-view" class="content-full" style="display:flex;flex-direction:column;">
+      <div class="map-mock" style="flex:1;min-height:280px;cursor:pointer;" onclick="go('ngo-pickup-detail')">
+        <div class="map-roads"></div>
+        <div class="map-pin pin-orange" style="left:35%;top:30%;">
+          <div class="map-pin-dot"><span>🍛</span></div>
+          <div class="map-pin-label">Chicken · 17 lbs</div>
+        </div>
+        <div class="map-pin pin-orange" style="left:62%;top:45%;">
+          <div class="map-pin-dot"><span>🥗</span></div>
+          <div class="map-pin-label">Salad · 9 lbs</div>
+        </div>
+        <div class="map-pin pin-green" style="left:50%;top:62%;">
+          <div class="map-pin-dot"><span>🧊</span></div>
+          <div class="map-pin-label">SF-01 · 60%</div>
+        </div>
+        <div class="map-pin pin-blue" style="left:48%;top:48%;">
+          <div class="map-pin-dot"><span>🤝</span></div>
+          <div class="map-pin-label">You</div>
+        </div>
+        <div class="map-overlay-card">
+          <div class="map-overlay-handle"></div>
+          <div style="font-size:13px;font-weight:700;color:var(--bark);">5 food listings nearby</div>
+          <div class="text-sm" style="margin-bottom:12px;">Sorted by urgency · Tap a pin to view</div>
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;">
+            <div style="min-width:120px;background:var(--fog);border-radius:var(--r-md);padding:10px;cursor:pointer;border:1.5px solid var(--mist);" onclick="go('ngo-pickup-detail')">
+              <div style="font-size:20px;">🍛</div>
+              <div style="font-size:12px;font-weight:700;color:var(--bark);margin-top:4px;">Chicken</div>
+              <div style="font-size:10px;color:var(--warn);">⏱ 2h left</div>
+            </div>
+            <div style="min-width:120px;background:var(--fog);border-radius:var(--r-md);padding:10px;cursor:pointer;">
+              <div style="font-size:20px;">🥗</div>
+              <div style="font-size:12px;font-weight:700;color:var(--bark);margin-top:4px;">Salad</div>
+              <div style="font-size:10px;color:var(--warn);">⏱ 1h left</div>
+            </div>
+            <div style="min-width:120px;background:var(--fog);border-radius:var(--r-md);padding:10px;cursor:pointer;">
+              <div style="font-size:20px;">🍞</div>
+              <div style="font-size:12px;font-weight:700;color:var(--bark);margin-top:4px;">Bread</div>
+              <div style="font-size:10px;color:var(--stone);">3h left</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ngo-list-view" style="display:none;" class="content">
+      <div class="food-card" onclick="go('ngo-pickup-detail')">
+        <div class="food-card-image">🍛
+          <div class="food-card-badges"><span class="badge badge-red">🔥 Urgent</span></div>
+        </div>
+        <div class="food-card-body">
+          <div class="food-card-name">Chicken Tikka Masala</div>
+          <div class="food-card-restaurant">Green Leaf Bistro · 0.7 mi</div>
+          <div class="food-card-meta">
+            <span class="badge badge-green">🌱 Veg</span>
+            <span class="badge badge-wheat">92% fresh</span>
+            <span class="badge badge-white">~20 people</span>
+          </div>
+          <div class="food-card-footer">
+            <span class="food-card-distance">17 lbs · Nonprofit Pickup</span>
+            <span class="food-card-time">⏱ 2h left</span>
+          </div>
+        </div>
+      </div>
+      <div class="food-card">
+        <div class="food-card-image" style="background:linear-gradient(135deg,#F5E8D0,#EDD5A8);">🥗</div>
+        <div class="food-card-body">
+          <div class="food-card-name">Garden Salad</div>
+          <div class="food-card-restaurant">The Harvest Table · 1.3 mi</div>
+          <div class="food-card-meta">
+            <span class="badge badge-green">🌱 Veg</span>
+            <span class="badge badge-orange">74% fresh</span>
+          </div>
+          <div class="food-card-footer">
+            <span class="food-card-distance">9 lbs · Smart Fridge</span>
+            <span class="food-card-time">⏱ 1h left</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ngo-fridge-view" style="display:none;" class="content">
+      <div class="fridge-card" onclick="go('fridge-detail')">
+        <div class="fridge-header">
+          <span class="fridge-icon">🧊</span>
+          <div>
+            <div class="fridge-name">Smart Fridge SF-01</div>
+            <div class="fridge-loc">Southside Community Hub · 0.2 mi</div>
+          </div>
+          <span class="badge badge-white" style="margin-left:auto;">🟢 Online</span>
+        </div>
+        <div class="fridge-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:13px;font-weight:700;color:var(--bark);">Capacity Used</span>
+            <span style="font-size:13px;font-weight:700;color:var(--fern);">9/16 slots · 56%</span>
+          </div>
+          <div class="fridge-slots">
+            <div class="fridge-slot slot-full">🍛</div>
+            <div class="fridge-slot slot-full">🥗</div>
+            <div class="fridge-slot slot-full">🍞</div>
+            <div class="fridge-slot slot-warn">⚠️</div>
+            <div class="fridge-slot slot-full">🥘</div>
+            <div class="fridge-slot slot-full">🍜</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-full">🥣</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+            <div class="fridge-slot slot-empty">—</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:var(--fog);border-radius:var(--r-md);padding:10px;text-align:center;">
+              <div style="font-size:16px;font-weight:700;color:var(--moss);">4.2°C</div>
+              <div style="font-size:10px;color:var(--stone);">Temperature</div>
+            </div>
+            <div style="flex:1;background:var(--fog);border-radius:var(--r-md);padding:10px;text-align:center;">
+              <div style="font-size:16px;font-weight:700;color:var(--safe);">Normal</div>
+              <div style="font-size:10px;color:var(--stone);">Status</div>
+            </div>
+            <div style="flex:1;background:var(--straw);border-radius:var(--r-md);padding:10px;text-align:center;">
+              <div style="font-size:16px;font-weight:700;color:var(--earth);">1</div>
+              <div style="font-size:10px;color:var(--earth);">Expiring</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
+      <button class="tab-item" onclick="go('ngo-pickup-detail')"><span class="tab-icon">🗺</span><span class="tab-label">Pickups</span></button>
+      <button class="tab-item" onclick="go('fridge-detail')"><span class="tab-icon">🧊</span><span class="tab-label">Fridges</span></button>
+      <button class="tab-item" onclick="go('ngo-impact')"><span class="tab-icon">📊</span><span class="tab-label">Impact</span></button>
+      <button class="tab-item" onclick="go('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ Nonprofit PICKUP DETAIL ═══ -->
+  <div class="screen" id="ngo-pickup-detail">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('ngo-dashboard')">←</button>
+      <span class="nav-title">Food Listing</span>
+    </div>
+    <div style="height:180px;background:linear-gradient(135deg,var(--mist),var(--straw));display:flex;align-items:center;justify-content:center;font-size:72px;">🍛</div>
+    <div class="content" style="padding-top:16px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:var(--bark);">Chicken Tikka Masala</div>
+          <div class="text-sm">Green Leaf Bistro · 0.7 mi away</div>
+        </div>
+        <span class="badge badge-red">🔥 Urgent</span>
+      </div>
+      <div class="tag-row" style="margin-top:12px;">
+        <span class="tag tag-veg">🌱 Vegetarian</span>
+        <span class="tag">Rice / Grain</span>
+        <span class="tag tag-allergen">🥜 Nuts</span>
+      </div>
+      <div class="divider"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:var(--fog);border-radius:var(--r-md);padding:12px;">
+          <div style="font-size:11px;color:var(--stone);">Quantity</div>
+          <div style="font-size:18px;font-weight:800;color:var(--bark);">17 lbs</div>
+        </div>
+        <div style="background:var(--fog);border-radius:var(--r-md);padding:12px;">
+          <div style="font-size:11px;color:var(--stone);">Serves</div>
+          <div style="font-size:18px;font-weight:800;color:var(--bark);">~20 people</div>
+        </div>
+        <div style="background:var(--fog);border-radius:var(--r-md);padding:12px;">
+          <div style="font-size:11px;color:var(--stone);">Pickup by</div>
+          <div style="font-size:18px;font-weight:800;color:var(--warn);">10:30 PM</div>
+        </div>
+        <div style="background:var(--fog);border-radius:var(--r-md);padding:12px;">
+          <div style="font-size:11px;color:var(--stone);">Posted</div>
+          <div style="font-size:18px;font-weight:800;color:var(--bark);">45 min ago</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div style="font-size:13px;font-weight:700;color:var(--bark);margin-bottom:6px;">Freshness Score</div>
+        <div class="freshness-bar" style="height:12px;"><div class="freshness-fill fresh-excellent" style="width:92%;"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span class="text-sm">Sensor reading</span>
+          <span style="font-size:13px;font-weight:700;color:var(--safe);">92% · Excellent · ~6h remaining</span>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:var(--white);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-card);">
+        <div style="height:120px;background:linear-gradient(135deg,#C8E6A8,#A8D47A);position:relative;display:flex;align-items:center;justify-content:center;">
+          <div class="map-roads" style="position:absolute;inset:0;"></div>
+          <div style="background:var(--white);border-radius:var(--r-md);padding:8px 14px;font-size:12px;font-weight:700;color:var(--bark);z-index:1;box-shadow:var(--shadow-card);">📍 0.7 mi · ~7 min drive</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-secondary" style="flex:0 0 auto;width:auto;padding:14px 18px;">📞</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="go('ngo-route')">Accept & Navigate →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ Nonprofit ROUTE ═══ -->
+  <div class="screen" id="ngo-route">
+    <div style="position:absolute;top:40px;left:0;right:0;z-index:10;padding:0 12px;">
+      <div style="background:var(--moss);border-radius:var(--r-xl);padding:14px 18px;color:white;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:24px;">🧭</span>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;">Head toward Green Leaf Bistro</div>
+          <div style="font-size:11px;opacity:.75;">Turn right on Michigan Ave · 0.7 mi · ~6 min</div>
+        </div>
+        <button onclick="go('ngo-dashboard')" style="background:rgba(255,255,255,.2);border:none;color:white;border-radius:var(--r-sm);padding:6px 10px;font-size:12px;cursor:pointer;">✕</button>
+      </div>
+    </div>
+    <div class="map-mock" style="position:absolute;inset:0;">
+      <div class="map-roads"></div>
+      <div class="map-pin pin-orange" style="left:38%;top:28%;">
+        <div class="map-pin-dot"><span>🍛</span></div>
+        <div class="map-pin-label">Destination</div>
+      </div>
+      <div class="map-pin pin-blue" style="left:52%;top:60%;">
+        <div class="map-pin-dot"><span>🚗</span></div>
+        <div class="map-pin-label">You</div>
+      </div>
+      <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 390 500">
+        <polyline points="203,300 200,260 180,220 160,180 148,145" stroke="var(--fern)" stroke-width="4" fill="none" stroke-dasharray="8,4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:20px 16px 36px;box-shadow:0 -4px 20px rgba(0,0,0,.1);">
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+        <div style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--bark);">6 min</div>
+          <div class="text-sm">ETA</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--bark);">0.7 mi</div>
+          <div class="text-sm">Distance</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--warn);">2h</div>
+          <div class="text-sm">Deadline</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="go('handoff')">Mark as Arrived ✓</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ FRIDGE DETAIL ═══ -->
+  <div class="screen" id="fridge-detail">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('ngo-dashboard')">←</button>
+      <span class="nav-title">Smart Fridge SF-01</span>
+    </div>
+    <div class="content">
+      <div style="background:linear-gradient(135deg,#1B4D6B,#2980B9);border-radius:var(--r-xl);padding:20px;color:white;margin-top:16px;">
+        <div style="font-size:14px;opacity:.8;">Southside Community Hub</div>
+        <div style="font-size:22px;font-weight:800;margin-top:4px;">Smart Fridge SF-01</div>
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <div style="flex:1;background:rgba(255,255,255,.12);border-radius:var(--r-md);padding:12px;text-align:center;">
+            <div style="font-size:20px;font-weight:800;">4.2°C</div>
+            <div style="font-size:10px;opacity:.75;margin-top:2px;">Temperature</div>
+          </div>
+          <div style="flex:1;background:rgba(255,255,255,.12);border-radius:var(--r-md);padding:12px;text-align:center;">
+            <div style="font-size:20px;font-weight:800;">64%</div>
+            <div style="font-size:10px;opacity:.75;margin-top:2px;">Humidity</div>
+          </div>
+          <div style="flex:1;background:rgba(255,255,255,.12);border-radius:var(--r-md);padding:12px;text-align:center;">
+            <div style="font-size:20px;font-weight:800;">9/16</div>
+            <div style="font-size:10px;opacity:.75;margin-top:2px;">Capacity</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div style="font-size:15px;font-weight:700;color:var(--bark);margin-bottom:10px;">Sensor Readings</div>
+        <div style="background:var(--white);border-radius:var(--r-xl);padding:0 16px;box-shadow:var(--shadow-card);">
+          <div class="sensor-row">
+            <span class="sensor-icon">🌡️</span>
+            <div class="sensor-info">
+              <div class="sensor-name">Temperature</div>
+              <div class="sensor-value">4.2°C · Ideal range 2–5°C</div>
+            </div>
+            <span class="badge badge-green sensor-badge">✓ Normal</span>
+          </div>
+          <div class="sensor-row">
+            <span class="sensor-icon">💧</span>
+            <div class="sensor-info">
+              <div class="sensor-name">Humidity</div>
+              <div class="sensor-value">64% relative humidity</div>
+            </div>
+            <span class="badge badge-green sensor-badge">✓ Normal</span>
+          </div>
+          <div class="sensor-row">
+            <span class="sensor-icon">🫧</span>
+            <div class="sensor-info">
+              <div class="sensor-name">CO₂ / Air Quality</div>
+              <div class="sensor-value">420 ppm · Fresh air</div>
+            </div>
+            <span class="badge badge-green sensor-badge">✓ Good</span>
+          </div>
+          <div class="sensor-row">
+            <span class="sensor-icon">🚪</span>
+            <div class="sensor-info">
+              <div class="sensor-name">Door Status</div>
+              <div class="sensor-value">Last opened 23 min ago · Closed</div>
+            </div>
+            <span class="badge badge-green sensor-badge">🔒 Secured</span>
+          </div>
+          <div class="sensor-row">
+            <span class="sensor-icon">⚡</span>
+            <div class="sensor-info">
+              <div class="sensor-name">Power Supply</div>
+              <div class="sensor-value">Mains connected · No outage</div>
+            </div>
+            <span class="badge badge-green sensor-badge">✓ Online</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div style="font-size:15px;font-weight:700;color:var(--bark);margin-bottom:10px;">Current Inventory</div>
+        <div style="background:var(--white);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-card);">
+          <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--cloud);">
+            <span style="font-size:28px;">🍛</span>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:var(--bark);">Chicken Tikka Masala</div>
+              <div class="text-sm">Slot A1 · Added 2h ago · 7 lbs</div>
+              <div class="freshness-bar" style="margin-top:6px;"><div class="freshness-fill fresh-excellent" style="width:88%;"></div></div>
+            </div>
+            <span class="badge badge-green">Excellent</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--cloud);">
+            <span style="font-size:28px;">🥗</span>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:var(--bark);">Mixed Salad</div>
+              <div class="text-sm">Slot A2 · Added 5h ago · 3 lbs</div>
+              <div class="freshness-bar" style="margin-top:6px;"><div class="freshness-fill fresh-good" style="width:62%;"></div></div>
+            </div>
+            <span class="badge badge-orange">Consume Soon</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;background:#FEF8F8;">
+            <span style="font-size:28px;">🍞</span>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:var(--bark);">Bread Rolls</div>
+              <div class="text-sm">Slot B1 · Added 8h ago · 0.17 lbs</div>
+              <div class="freshness-bar" style="margin-top:6px;"><div class="freshness-fill fresh-danger" style="width:22%;"></div></div>
+            </div>
+            <span class="badge badge-red">⚠ Remove</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-danger" style="margin-top:16px;">⚠ Remove Expired Items</button>
+      <div style="height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ Nonprofit IMPACT ═══ -->
+  <div class="screen" id="ngo-impact">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('ngo-dashboard')">←</button>
+      <span class="nav-title">Impact & Donations</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div class="donation-meter">
+        <div class="meter-header">
+          <div>
+            <div style="font-size:12px;color:var(--stone);">Donations raised</div>
+            <div class="meter-raised">$9,640</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:var(--stone);">Goal</div>
+            <div class="meter-goal">$12,000</div>
+          </div>
+        </div>
+        <div class="meter-track"><div class="meter-fill" style="width:80%;"></div></div>
+        <div class="meter-footer">
+          <span class="meter-pct">80% of goal reached</span>
+          <span class="meter-donors">142 donors</span>
+        </div>
+      </div>
+
+      <div class="impact-grid">
+        <div class="impact-card"><div class="impact-num">2,140</div><div class="impact-label">Meals rescued this month</div></div>
+        <div class="impact-card"><div class="impact-num">1,500 lbs</div><div class="impact-label">Food waste diverted</div></div>
+        <div class="impact-card"><div class="impact-num">482</div><div class="impact-label">Beneficiaries served</div></div>
+        <div class="impact-card"><div class="impact-num">3</div><div class="impact-label">Smart fridges active</div></div>
+      </div>
+
+      <div style="font-size:15px;font-weight:700;color:var(--bark);margin:16px 0 10px;">How donations are used</div>
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:16px;box-shadow:var(--shadow-card);">
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">🚗 Food transport</span><span class="usage-pct">35% · $3,374</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:35%;background:var(--fern);"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">🧊 Fridge maintenance</span><span class="usage-pct">28% · $2,699</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:28%;background:var(--leaf);"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">📦 Storage & logistics</span><span class="usage-pct">20% · $1,928</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:20%;background:var(--wheat);"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">👥 Community outreach</span><span class="usage-pct">17% · $1,639</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:17%;background:var(--sprout);"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ USER DISCOVERY ═══ -->
+  <div class="screen" id="user-discovery">
+    <div style="position:absolute;top:40px;left:0;right:0;z-index:20;padding:0 12px;">
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:12px 16px;box-shadow:var(--shadow-float);display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">🔍</span>
+        <input style="border:none;outline:none;flex:1;font-size:14px;color:var(--bark);" placeholder="Search food near you…" value="">
+        <span style="font-size:16px;cursor:pointer;">🎛</span>
+      </div>
+    </div>
+    <div class="map-mock" style="position:absolute;inset:0;top:40px;">
+      <div class="map-roads"></div>
+      <div class="map-pin pin-green" style="left:42%;top:35%;" onclick="go('food-detail')">
+        <div class="map-pin-dot"><span>🍛</span></div>
+        <div class="map-pin-label">Free · 0.7 mi</div>
+      </div>
+      <div class="map-pin pin-green" style="left:68%;top:48%;" onclick="go('fridge-user-view')">
+        <div class="map-pin-dot"><span>🧊</span></div>
+        <div class="map-pin-label">Fridge · 1.1 mi</div>
+      </div>
+      <div class="map-pin pin-orange" style="left:30%;top:55%;">
+        <div class="map-pin-dot"><span>🥗</span></div>
+        <div class="map-pin-label">1h left · 2km</div>
+      </div>
+      <div class="map-pin pin-wheat" style="left:55%;top:65%;">
+        <div class="map-pin-dot"><span>🍞</span></div>
+        <div class="map-pin-label">Fridge · 1.4 mi</div>
+      </div>
+    </div>
+
+    <div style="position:absolute;bottom:0;left:0;right:0;">
+      <div style="background:var(--white);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.1);">
+        <div style="padding:0 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:15px;font-weight:700;color:var(--bark);">7 items nearby</div>
+          <div class="view-toggle" style="margin:0;">
+            <button class="toggle-btn active" style="padding:6px 14px;font-size:12px;">🗺 Map</button>
+            <button class="toggle-btn" style="padding:6px 14px;font-size:12px;" onclick="go('user-list')">📋 List</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 16px;">
+          <div style="min-width:150px;background:var(--fog);border-radius:var(--r-lg);padding:12px;cursor:pointer;border:1.5px solid var(--mist);" onclick="go('food-detail')">
+            <div style="font-size:28px;">🍛</div>
+            <div style="font-size:13px;font-weight:700;color:var(--bark);margin-top:6px;">Chicken Dish</div>
+            <div class="text-sm">Feed Chicago Network · 0.7 mi</div>
+            <div style="margin-top:8px;">
+              <div class="freshness-bar"><div class="freshness-fill fresh-excellent" style="width:92%;"></div></div>
+            </div>
+            <div style="font-size:11px;color:var(--safe);margin-top:4px;font-weight:600;">⏱ 6h remaining</div>
+          </div>
+          <div style="min-width:150px;background:var(--fog);border-radius:var(--r-lg);padding:12px;cursor:pointer;" onclick="go('fridge-user-view')">
+            <div style="font-size:28px;">🧊</div>
+            <div style="font-size:13px;font-weight:700;color:var(--bark);margin-top:6px;">Smart Fridge</div>
+            <div class="text-sm">SF-01 · 1.1 mi · 4 items</div>
+            <div style="margin-top:8px;padding:6px;background:rgba(41,128,185,.1);border-radius:var(--r-sm);text-align:center;">
+              <span style="font-size:11px;color:#2980B9;font-weight:700;">Available now</span>
+            </div>
+          </div>
+          <div style="min-width:150px;background:var(--fog);border-radius:var(--r-lg);padding:12px;cursor:pointer;">
+            <div style="font-size:28px;">🥗</div>
+            <div style="font-size:13px;font-weight:700;color:var(--bark);margin-top:6px;">Garden Salad</div>
+            <div class="text-sm">Spice Nonprofit · 1.3 mi</div>
+            <div style="margin-top:8px;">
+              <div class="freshness-bar"><div class="freshness-fill fresh-soon" style="width:45%;"></div></div>
+            </div>
+            <div style="font-size:11px;color:var(--warn);margin-top:4px;font-weight:600;">⚠ 1h remaining</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar" style="background:var(--white);">
+        <button class="tab-item active"><span class="tab-icon">🗺</span><span class="tab-label">Nearby</span></button>
+        <button class="tab-item" onclick="go('user-list')"><span class="tab-icon">📋</span><span class="tab-label">Browse</span></button>
+        <button class="tab-item"><span class="tab-icon">📦</span><span class="tab-label">Reserved</span></button>
+        <button class="tab-item"><span class="tab-icon">🕐</span><span class="tab-label">History</span></button>
+        <button class="tab-item" onclick="go('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ USER LIST ═══ -->
+  <div class="screen" id="user-list">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('user-discovery')">←</button>
+      <span class="nav-title">Food Near You</span>
+    </div>
+    <div class="content" style="padding-top:12px;">
+      <div class="food-card" onclick="go('food-detail')">
+        <div class="food-card-image">🍛
+          <div class="food-card-badges"><span class="badge badge-green">🌱 Veg</span></div>
+        </div>
+        <div class="food-card-body">
+          <div class="food-card-name">Chicken Tikka Masala</div>
+          <div class="food-card-restaurant">Feed Chicago Network · 0.7 mi · Nonprofit Pickup</div>
+          <div style="margin-top:8px;">
+            <div class="freshness-bar"><div class="freshness-fill fresh-excellent" style="width:92%;"></div></div>
+            <div style="font-size:11px;color:var(--safe);margin-top:3px;font-weight:600;">Freshness: 92% Excellent · 6h remaining</div>
+          </div>
+          <div class="food-card-footer">
+            <span class="food-card-distance">~20 servings</span>
+            <span style="font-size:12px;color:var(--safe);font-weight:700;">✓ Available</span>
+          </div>
+        </div>
+      </div>
+      <div class="food-card" onclick="go('fridge-user-view')">
+        <div class="food-card-image" style="background:linear-gradient(135deg,#D0E8F5,#B0D4E8);">🧊
+          <div class="food-card-badges"><span class="badge badge-white">Smart Fridge</span></div>
+        </div>
+        <div class="food-card-body">
+          <div class="food-card-name">Smart Fridge SF-01</div>
+          <div class="food-card-restaurant">Southside Hub · 1.1 mi · 4 items available</div>
+          <div class="food-card-meta">
+            <span class="badge badge-green">🌱 Veg options</span>
+            <span class="badge badge-white">4.2°C</span>
+          </div>
+          <div class="food-card-footer">
+            <span class="food-card-distance">Open 6AM–10PM CT</span>
+            <span style="font-size:12px;color:var(--safe);font-weight:700;">✓ Open now</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ FOOD DETAIL (USER) ═══ -->
+  <div class="screen" id="food-detail">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('user-discovery')">←</button>
+      <span class="nav-title">Food Details</span>
+    </div>
+    <div style="height:200px;background:linear-gradient(135deg,var(--mist),var(--straw));display:flex;align-items:center;justify-content:center;font-size:80px;">🍛</div>
+    <div class="content" style="padding-top:16px;">
+      <div style="font-size:24px;font-weight:800;color:var(--bark);">Chicken Tikka Masala</div>
+      <div class="text-sm" style="margin-top:4px;">Feed Chicago Network · Southside, Chicago</div>
+      <div class="tag-row" style="margin-top:10px;">
+        <span class="tag tag-veg">🌱 Vegetarian</span>
+        <span class="tag">Rice / Grain</span>
+        <span class="tag tag-allergen">🥜 Nuts</span>
+      </div>
+      <div class="divider"></div>
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:16px;box-shadow:var(--shadow-card);">
+        <div style="font-size:14px;font-weight:700;color:var(--bark);margin-bottom:12px;">Freshness Report · IoT Verified</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+          <div style="width:60px;height:60px;border-radius:50%;background:var(--fog);border:3px solid var(--leaf);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--fern);">92</div>
+          <div>
+            <div style="font-size:17px;font-weight:800;color:var(--safe);">Excellent Quality</div>
+            <div class="text-sm">Sensor-verified · Prepared 2h ago</div>
+          </div>
+        </div>
+        <div class="freshness-bar" style="height:10px;"><div class="freshness-fill fresh-excellent" style="width:92%;"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span class="text-sm">⏱ Best before: <strong style="color:var(--bark);">6 hours</strong></span>
+          <span class="text-sm">🌡 Stored at 4.2°C</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+        <div style="background:var(--fog);border-radius:var(--r-md);padding:12px;">
+          <div style="font-size:11px;color:var(--stone);">Quantity</div>
+          <div style="font-size:18px;font-weight:800;color:var(--bark);">17 lbs</div>
+        </div>
+        <div style="background:var(--fog);border-radius:var(--r-md);padding:12px;">
+          <div style="font-size:11px;color:var(--stone);">Serves</div>
+          <div style="font-size:18px;font-weight:800;color:var(--bark);">~20 people</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:var(--white);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-card);">
+        <div style="height:100px;background:linear-gradient(135deg,#C8E6A8,#A8D47A);position:relative;display:flex;align-items:center;justify-content:center;">
+          <div class="map-roads" style="position:absolute;inset:0;"></div>
+          <div style="background:var(--white);border-radius:var(--r-md);padding:8px 14px;font-size:12px;font-weight:700;color:var(--bark);z-index:1;box-shadow:var(--shadow-card);">📍 0.7 mi · ~15 min walk</div>
+        </div>
+        <div style="padding:12px 16px;border-top:1px solid var(--cloud);">
+          <div style="font-size:13px;font-weight:700;color:var(--bark);">Feed Chicago Network</div>
+          <div class="text-sm">Open until 9 PM ET · Verified Nonprofit</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:16px;" onclick="go('reserve-flow')">Reserve This Food →</button>
+      <div style="height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ RESERVE FLOW ═══ -->
+  <div class="screen" id="reserve-flow">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('food-detail')">←</button>
+      <span class="nav-title">Reserve Food</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:16px;box-shadow:var(--shadow-card);margin-bottom:16px;display:flex;gap:12px;align-items:center;">
+        <span style="font-size:36px;">🍛</span>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--bark);">Chicken Tikka Masala</div>
+          <div class="text-sm">Feed Chicago Network · 0.7 mi</div>
+          <span class="badge badge-green" style="margin-top:6px;display:inline-flex;">Freshness 92% · Excellent</span>
+        </div>
+      </div>
+
+      <div style="font-size:14px;font-weight:700;color:var(--bark);margin-bottom:10px;">Select Pickup Time</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        <div style="padding:14px 16px;border:2px solid var(--leaf);border-radius:var(--r-lg);background:var(--fog);cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--bark);">7:30 PM – 8:00 PM</div>
+            <div class="text-sm">Within 45 minutes</div>
+          </div>
+          <span style="color:var(--fern);font-size:18px;">✓</span>
+        </div>
+        <div style="padding:14px 16px;border:2px solid var(--pebble);border-radius:var(--r-lg);cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--bark);">8:00 PM – 8:30 PM</div>
+            <div class="text-sm">1h 15min from now</div>
+          </div>
+          <div class="text-sm">3 slots left</div>
+        </div>
+        <div style="padding:14px 16px;border:2px solid var(--pebble);border-radius:var(--r-lg);cursor:pointer;opacity:.5;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--bark);">8:30 PM – 9:00 PM</div>
+            <div class="text-sm">After best-before window</div>
+          </div>
+          <span class="badge badge-red">Unavailable</span>
+        </div>
+      </div>
+
+      <div style="background:var(--straw);border-radius:var(--r-lg);padding:14px;border-left:3px solid var(--wheat);margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--earth);">📋 Reservation Rules</div>
+        <div style="font-size:12px;color:var(--earth);margin-top:6px;line-height:1.5;">
+          Your reservation holds for 30 minutes. If you don't arrive in time, the item releases to others automatically. No-shows affect your community score.
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="go('pickup-timer')">Confirm Reservation →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ PICKUP TIMER ═══ -->
+  <div class="screen" id="pickup-timer">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('reserve-flow')">←</button>
+      <span class="nav-title">Your Reservation</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div style="text-align:center;margin-bottom:8px;">
+        <div style="font-size:14px;color:var(--stone);">Reserved for</div>
+        <div style="font-size:20px;font-weight:800;color:var(--bark);margin-top:4px;">Chicken Tikka Masala</div>
+        <div class="text-sm">Feed Chicago Network · Southside</div>
+      </div>
+
+      <div class="timer-card" id="timer-display">
+        <div class="timer-label">PICK UP WITHIN</div>
+        <div class="timer-clock" id="countdown">28:47</div>
+        <div class="timer-sub">Slot: 7:30 PM – 8:00 PM · Slot expires at 8:00 PM</div>
+      </div>
+
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:0 16px;box-shadow:var(--shadow-card);margin-bottom:14px;">
+        <div style="padding:14px 0;border-bottom:1px solid var(--cloud);">
+          <div style="font-size:13px;font-weight:700;color:var(--bark);">📍 Where to go</div>
+          <div class="text-sm" style="margin-top:4px;">Feed Chicago Network, Southside Community Center, Door B</div>
+        </div>
+        <div style="padding:14px 0;border-bottom:1px solid var(--cloud);">
+          <div style="font-size:13px;font-weight:700;color:var(--bark);">✅ What to bring</div>
+          <div class="text-sm" style="margin-top:4px;">Your phone for QR check-in · Your own container (optional)</div>
+        </div>
+        <div style="padding:14px 0;">
+          <div style="font-size:13px;font-weight:700;color:var(--bark);">🔐 Your pickup code</div>
+          <div style="font-size:28px;font-weight:900;color:var(--moss);letter-spacing:4px;margin-top:6px;">4 8 2 1</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="go('qr-checkin')">I'm Here — Check In →</button>
+      <button class="btn btn-secondary" style="margin-top:10px;">Get Directions 🗺</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ QR CHECK-IN ═══ -->
+  <div class="screen" id="qr-checkin">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('pickup-timer')">←</button>
+      <span class="nav-title">Check In</span>
+    </div>
+    <div class="content" style="padding-top:24px;text-align:center;">
+      <div style="font-size:14px;color:var(--stone);margin-bottom:20px;">Show this QR code or enter the PIN to the Staff volunteer</div>
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:24px;box-shadow:var(--shadow-float);display:inline-block;margin-bottom:20px;">
+        <svg width="160" height="160" viewBox="0 0 160 160" style="display:block;">
+          <rect width="160" height="160" fill="white"/>
+          <rect x="10" y="10" width="50" height="50" rx="4" fill="none" stroke="#2D5016" stroke-width="3"/>
+          <rect x="20" y="20" width="30" height="30" rx="2" fill="#2D5016"/>
+          <rect x="100" y="10" width="50" height="50" rx="4" fill="none" stroke="#2D5016" stroke-width="3"/>
+          <rect x="110" y="20" width="30" height="30" rx="2" fill="#2D5016"/>
+          <rect x="10" y="100" width="50" height="50" rx="4" fill="none" stroke="#2D5016" stroke-width="3"/>
+          <rect x="20" y="110" width="30" height="30" rx="2" fill="#2D5016"/>
+          <rect x="70" y="70" width="8" height="8" fill="#2D5016"/>
+          <rect x="82" y="70" width="8" height="8" fill="#2D5016"/>
+          <rect x="94" y="70" width="8" height="8" fill="#2D5016"/>
+          <rect x="70" y="82" width="8" height="8" fill="#2D5016"/>
+          <rect x="82" y="94" width="8" height="8" fill="#2D5016"/>
+          <rect x="106" y="82" width="8" height="8" fill="#2D5016"/>
+          <rect x="118" y="94" width="8" height="8" fill="#2D5016"/>
+          <rect x="130" y="70" width="8" height="8" fill="#2D5016"/>
+          <rect x="70" y="106" width="8" height="8" fill="#2D5016"/>
+          <rect x="94" y="106" width="8" height="8" fill="#2D5016"/>
+          <rect x="82" y="118" width="8" height="8" fill="#2D5016"/>
+          <rect x="118" y="118" width="8" height="8" fill="#2D5016"/>
+          <rect x="130" y="130" width="8" height="8" fill="#2D5016"/>
+          <rect x="70" y="130" width="8" height="8" fill="#2D5016"/>
+        </svg>
+      </div>
+      <div style="font-size:36px;font-weight:900;letter-spacing:8px;color:var(--moss);margin:8px 0;">4821</div>
+      <div class="text-sm" style="margin-bottom:24px;">PIN valid for 30 min · Verified by geofence</div>
+
+      <div style="background:var(--fog);border-radius:var(--r-lg);padding:14px;text-align:left;margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--bark);">Or enter OTP manually</div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+          <input class="input-field" style="text-align:center;font-size:24px;font-weight:900;letter-spacing:8px;padding:10px;" value="4821" maxlength="4">
+          <button class="btn btn-primary btn-sm">Verify</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="go('pickup-success')">Pickup Confirmed ✓</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ PICKUP SUCCESS ═══ -->
+  <div class="screen" id="pickup-success">
+    <div class="nav-bar">
+      <span class="nav-logo">Save<span>Food</span></span>
+    </div>
+    <div class="success-screen">
+      <div class="success-icon">🌿</div>
+      <div class="success-title">Picked Up!</div>
+      <div class="success-sub">You collected Chicken Tikka Masala from Feed Chicago Network. Enjoy your meal — and thank you for reducing food waste.</div>
+      <div class="impact-grid" style="width:100%;margin-top:20px;">
+        <div class="impact-card"><div class="impact-num">1</div><div class="impact-label">Meal claimed today</div></div>
+        <div class="impact-card"><div class="impact-num">0.9 lbs</div><div class="impact-label">Waste prevented</div></div>
+      </div>
+      <div style="background:var(--fog);border-radius:var(--r-lg);padding:14px;margin-top:16px;width:100%;text-align:left;">
+        <div style="font-size:13px;font-weight:700;color:var(--bark);">Rate this pickup</div>
+        <div style="display:flex;gap:8px;margin-top:10px;font-size:28px;cursor:pointer;">
+          <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:24px;width:100%;" onclick="go('user-discovery')">Find More Food</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ FRIDGE USER VIEW ═══ -->
+  <div class="screen" id="fridge-user-view">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('user-discovery')">←</button>
+      <span class="nav-title">Smart Fridge SF-01</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div style="background:linear-gradient(135deg,#1B4D6B,#2980B9);border-radius:var(--r-xl);padding:20px;color:white;margin-bottom:16px;">
+        <div style="font-size:22px;font-weight:800;">Smart Fridge SF-01</div>
+        <div style="font-size:13px;opacity:.75;margin-top:4px;">Southside Community Hub · Open now · 4 items</div>
+        <div style="display:flex;gap:12px;margin-top:14px;">
+          <div style="background:rgba(255,255,255,.15);border-radius:var(--r-md);padding:10px;flex:1;text-align:center;">
+            <div style="font-size:16px;font-weight:800;">4.2°C</div>
+            <div style="font-size:10px;opacity:.7;margin-top:2px;">Temp</div>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:var(--r-md);padding:10px;flex:1;text-align:center;">
+            <div style="font-size:16px;font-weight:800;">4 items</div>
+            <div style="font-size:10px;opacity:.7;margin-top:2px;">Available</div>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:var(--r-md);padding:10px;flex:1;text-align:center;">
+            <div style="font-size:16px;font-weight:800;">6AM–10PM CT</div>
+            <div style="font-size:10px;opacity:.7;margin-top:2px;">Hours</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:15px;font-weight:700;color:var(--bark);margin-bottom:10px;">Available Right Now</div>
+      <div style="background:var(--white);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-card);margin-bottom:12px;">
+        <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--cloud);cursor:pointer;" onclick="go('food-detail')">
+          <span style="font-size:28px;">🍛</span>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:var(--bark);">Chicken Tikka Masala</div>
+            <div class="text-sm">Slot A1 · 7 lbs · ~8 servings</div>
+            <div class="freshness-bar" style="margin-top:6px;"><div class="freshness-fill fresh-excellent" style="width:88%;"></div></div>
+            <div style="font-size:11px;color:var(--safe);margin-top:3px;font-weight:600;">Excellent · 6h remaining</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();go('reserve-flow')">Reserve</button>
+        </div>
+        <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--cloud);">
+          <span style="font-size:28px;">🥗</span>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:var(--bark);">Mixed Salad</div>
+            <div class="text-sm">Slot A2 · 3 lbs · ~4 servings</div>
+            <div class="freshness-bar" style="margin-top:6px;"><div class="freshness-fill fresh-good" style="width:62%;"></div></div>
+            <div style="font-size:11px;color:var(--warn);margin-top:3px;font-weight:600;">Good · 3h remaining</div>
+          </div>
+          <button class="btn btn-primary btn-sm">Reserve</button>
+        </div>
+        <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;opacity:.5;">
+          <span style="font-size:28px;">🍞</span>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:var(--bark);">Bread Rolls</div>
+            <div class="text-sm">Slot B1 · Not recommended</div>
+            <div class="freshness-bar" style="margin-top:6px;"><div class="freshness-fill fresh-danger" style="width:20%;"></div></div>
+            <div style="font-size:11px;color:var(--urgent);margin-top:3px;font-weight:600;">⚠ Not recommended · Expired</div>
+          </div>
+          <span class="badge badge-red">Unavail.</span>
+        </div>
+      </div>
+
+      <div style="background:var(--straw);border-radius:var(--r-lg);padding:14px;border-left:3px solid var(--wheat);">
+        <div style="font-size:13px;font-weight:700;color:var(--earth);">🔐 How to access</div>
+        <div style="font-size:12px;color:var(--earth);line-height:1.5;margin-top:6px;">Reserve an item, travel to the fridge, and scan your QR code or enter your OTP. The locker opens automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ DONOR DISCOVER ═══ -->
+  <div class="screen" id="donor-discover">
+    <div class="hero" style="background:linear-gradient(135deg,var(--earth),var(--clay));">
+      <div class="hero-greeting">💚 SaveFood — Donor</div>
+      <div class="hero-name">Support a cause</div>
+      <div class="hero-subtitle">100% of your donation goes to Nonprofits · Zero platform fee</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">$84k</div>
+          <div class="hero-stat-label">Raised this month</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">12k</div>
+          <div class="hero-stat-label">Meals funded</div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="section-header">
+        <span class="section-title">NGOs near you</span>
+        <span class="section-action">See all</span>
+      </div>
+
+      <div style="background:var(--white);border-radius:var(--r-xl);box-shadow:var(--shadow-card);overflow:hidden;margin-bottom:12px;cursor:pointer;" onclick="go('ngo-profile')">
+        <div style="background:linear-gradient(135deg,var(--moss),var(--fern));height:80px;display:flex;align-items:center;justify-content:center;font-size:36px;">🤝</div>
+        <div style="padding:16px;">
+          <div style="font-size:17px;font-weight:800;color:var(--bark);">Feed Chicago Network</div>
+          <div class="text-sm" style="margin-top:2px;">Southside, Chicago · 0.5 mi</div>
+          <div class="donation-meter" style="margin:12px 0 0;padding:0;box-shadow:none;">
+            <div class="meter-header" style="margin-bottom:8px;">
+              <div><div style="font-size:11px;color:var(--stone);">Raised</div><div style="font-size:18px;font-weight:800;color:var(--moss);">$9,640</div></div>
+              <div style="text-align:right;"><div style="font-size:11px;color:var(--stone);">Goal</div><div class="meter-goal">$12,000</div></div>
+            </div>
+            <div class="meter-track"><div class="meter-fill" style="width:80%;"></div></div>
+            <div class="meter-footer">
+              <span class="meter-pct">80% — 142 donors</span>
+              <span class="meter-donors">2,140 meals/mo</span>
+            </div>
+          </div>
+          <button class="btn btn-wheat" style="margin-top:14px;" onclick="event.stopPropagation();go('donate-flow')">💚 Donate Now</button>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border-radius:var(--r-xl);box-shadow:var(--shadow-card);overflow:hidden;margin-bottom:12px;">
+        <div style="background:linear-gradient(135deg,var(--earth),var(--clay));height:80px;display:flex;align-items:center;justify-content:center;font-size:36px;">🌾</div>
+        <div style="padding:16px;">
+          <div style="font-size:17px;font-weight:800;color:var(--bark);">Chicago Food Pantry</div>
+          <div class="text-sm" style="margin-top:2px;">Kurla, Chicago · 2.0 mi</div>
+          <div style="margin:12px 0;">
+            <div class="meter-track"><div class="meter-fill" style="width:55%;"></div></div>
+            <div class="meter-footer" style="margin-top:6px;">
+              <span class="meter-pct">$4,400 / $8,000</span>
+              <span class="meter-donors">88 donors</span>
+            </div>
+          </div>
+          <button class="btn btn-wheat">💚 Donate Now</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
+      <button class="tab-item" onclick="go('ngo-profile')"><span class="tab-icon">🤝</span><span class="tab-label">NGOs</span></button>
+      <button class="tab-item" onclick="go('donate-flow')"><span class="tab-icon">💚</span><span class="tab-label">Donate</span></button>
+      <button class="tab-item"><span class="tab-icon">📊</span><span class="tab-label">Impact</span></button>
+      <button class="tab-item" onclick="go('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ Nonprofit PROFILE (DONOR) ═══ -->
+  <div class="screen" id="ngo-profile">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('donor-discover')">←</button>
+      <span class="nav-title">NGO Profile</span>
+    </div>
+    <div style="background:linear-gradient(135deg,var(--moss),var(--fern));padding:32px 20px 24px;text-align:center;color:white;">
+      <div style="font-size:48px;margin-bottom:12px;">🤝</div>
+      <div style="font-size:22px;font-weight:800;">Feed Chicago Network</div>
+      <div style="font-size:13px;opacity:.75;margin-top:4px;">Est. 2018 · Southside, Chicago</div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+        <span class="badge badge-white">✓ Verified Nonprofit</span>
+        <span class="badge badge-white">3 smart fridges</span>
+      </div>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div class="donation-meter">
+        <div class="meter-header">
+          <div><div style="font-size:12px;color:var(--stone);">Raised this month</div><div class="meter-raised">$9,640</div></div>
+          <div style="text-align:right;"><div style="font-size:12px;color:var(--stone);">Monthly goal</div><div class="meter-goal">$12,000</div></div>
+        </div>
+        <div class="meter-track"><div class="meter-fill" style="width:80%;"></div></div>
+        <div class="meter-footer">
+          <span class="meter-pct">80% funded · 142 donors</span>
+          <span class="meter-donors">$2,360 to go</span>
+        </div>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-card"><div class="impact-num">2,140</div><div class="impact-label">Meals rescued / month</div></div>
+        <div class="impact-card"><div class="impact-num">482</div><div class="impact-label">Beneficiaries</div></div>
+        <div class="impact-card"><div class="impact-num">1,500 lbs</div><div class="impact-label">Food waste diverted</div></div>
+        <div class="impact-card"><div class="impact-num">100%</div><div class="impact-label">Donation transparency</div></div>
+      </div>
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:16px;box-shadow:var(--shadow-card);margin-top:4px;">
+        <div style="font-size:14px;font-weight:700;color:var(--bark);margin-bottom:12px;">How your donation is used</div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">🚗 Food transport</span><span class="usage-pct">35%</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:35%;background:var(--fern);"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">🧊 Fridge maintenance</span><span class="usage-pct">28%</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:28%;background:var(--leaf);"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">📦 Storage</span><span class="usage-pct">20%</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:20%;background:var(--wheat);"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label-row"><span class="usage-name">👥 Outreach</span><span class="usage-pct">17%</span></div>
+          <div class="usage-bar"><div class="usage-fill" style="width:17%;background:var(--sprout);"></div></div>
+        </div>
+      </div>
+      <button class="btn btn-wheat" style="margin-top:16px;" onclick="go('donate-flow')">💚 Donate to This NGO</button>
+      <div style="height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ DONATE FLOW ═══ -->
+  <div class="screen" id="donate-flow">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('ngo-profile')">←</button>
+      <span class="nav-title">Donate</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div style="background:var(--fog);border-radius:var(--r-xl);padding:16px;border:1px solid var(--mist);margin-bottom:20px;display:flex;gap:12px;align-items:center;">
+        <span style="font-size:32px;">🤝</span>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--bark);">Feed Chicago Network</div>
+          <div class="text-sm">Verified Nonprofit · 100% funds reach NGO</div>
+        </div>
+      </div>
+
+      <div style="font-size:14px;font-weight:700;color:var(--bark);margin-bottom:10px;">Choose amount</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div style="padding:14px;border:2px solid var(--leaf);border-radius:var(--r-lg);text-align:center;background:var(--fog);cursor:pointer;">
+          <div style="font-size:16px;font-weight:800;color:var(--moss);">$20</div>
+          <div style="font-size:10px;color:var(--stone);margin-top:2px;">1 meal</div>
+        </div>
+        <div style="padding:14px;border:2px solid var(--pebble);border-radius:var(--r-lg);text-align:center;cursor:pointer;">
+          <div style="font-size:16px;font-weight:800;color:var(--bark);">$100</div>
+          <div style="font-size:10px;color:var(--stone);margin-top:2px;">5 rescue meals</div>
+        </div>
+        <div style="padding:14px;border:2px solid var(--pebble);border-radius:var(--r-lg);text-align:center;cursor:pointer;">
+          <div style="font-size:16px;font-weight:800;color:var(--bark);">$200</div>
+          <div style="font-size:10px;color:var(--stone);margin-top:2px;">10+ meals</div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Or enter custom amount</label>
+        <input class="input-field" type="number" placeholder="$ Your amount" style="font-size:18px;font-weight:700;">
+      </div>
+      <div style="background:var(--fog);border-radius:var(--r-lg);padding:14px;border-left:3px solid var(--leaf);margin-bottom:16px;">
+        <div style="font-size:12px;color:var(--moss);font-weight:600;">🌿 Zero platform fee. $20 = $20 to Feed Chicago Network.</div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Payment Method</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:12px 16px;border:2px solid var(--leaf);border-radius:var(--r-lg);background:var(--fog);display:flex;gap:10px;align-items:center;cursor:pointer;">
+            <span style="font-size:22px;">📱</span>
+            <div style="font-size:13px;font-weight:700;color:var(--bark);">Apple Pay / Venmo</div>
+            <span style="margin-left:auto;color:var(--leaf);">✓</span>
+          </div>
+          <div style="padding:12px 16px;border:2px solid var(--pebble);border-radius:var(--r-lg);display:flex;gap:10px;align-items:center;cursor:pointer;">
+            <span style="font-size:22px;">💳</span>
+            <div style="font-size:13px;font-weight:700;color:var(--bark);">Debit / Credit Card</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-wheat" onclick="go('donate-success')">Donate $20 Now →</button>
+      <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--stone);">🔒 Secured by Stripe · Tax-deductible receipt emailed · 501(c)(3) eligible</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ DONATE SUCCESS ═══ -->
+  <div class="screen" id="donate-success">
+    <div class="nav-bar">
+      <span class="nav-logo">Save<span>Food</span></span>
+    </div>
+    <div class="success-screen">
+      <div class="success-icon">💚</div>
+      <div class="success-title">Thank you!</div>
+      <div class="success-sub">Your $20 donation to Feed Chicago Network has been received. This will fund approximately 1 rescued meal for a family tonight.</div>
+      <div style="background:var(--white);border-radius:var(--r-xl);padding:16px;box-shadow:var(--shadow-card);width:100%;margin-top:20px;text-align:left;">
+        <div style="font-size:13px;font-weight:700;color:var(--bark);margin-bottom:10px;">Donation receipt</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;"><span class="text-sm">To:</span><span style="font-size:12px;font-weight:700;color:var(--bark);">Feed Chicago Network</span></div>
+          <div style="display:flex;justify-content:space-between;"><span class="text-sm">Amount:</span><span style="font-size:12px;font-weight:700;color:var(--moss);">$20.00</span></div>
+          <div style="display:flex;justify-content:space-between;"><span class="text-sm">Platform fee:</span><span style="font-size:12px;font-weight:700;color:var(--safe);">$0.00 (Zero)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span class="text-sm">Transaction ID:</span><span style="font-size:11px;color:var(--stone);">SF-2024-087412</span></div>
+        </div>
+      </div>
+      <div class="donation-meter" style="width:100%;margin-top:12px;">
+        <div class="meter-header"><div><div style="font-size:11px;color:var(--stone);">Updated meter</div><div class="meter-raised">$9,660</div></div><div style="text-align:right;"><div style="font-size:11px;color:var(--stone);">Goal</div><div class="meter-goal">$12,000</div></div></div>
+        <div class="meter-track"><div class="meter-fill" style="width:80.5%;"></div></div>
+        <div class="meter-footer"><span class="meter-pct">Your contribution included!</span><span class="meter-donors">143 donors</span></div>
+      </div>
+      <button class="btn btn-wheat" style="margin-top:16px;width:100%;" onclick="go('donor-discover')">Back to Nonprofits</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ NOTIFICATIONS ═══ -->
+  <div class="screen" id="notifications">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="go('restaurant-dashboard')">←</button>
+      <span class="nav-title">Notifications</span>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div class="notif-card">
+        <div class="notif-icon-wrap" style="background:var(--fog);">🚗</div>
+        <div class="notif-text">
+          <div class="notif-title">Nonprofit en route to your listing</div>
+          <div class="notif-body">Feed Chicago Network accepted your Chicken Tikka Masala listing and is 6 minutes away.</div>
+          <div class="notif-time">2 min ago</div>
+        </div>
+        <div class="notif-unread"></div>
+      </div>
+      <div class="notif-card">
+        <div class="notif-icon-wrap" style="background:#FEF0DC;">⚠️</div>
+        <div class="notif-text">
+          <div class="notif-title">Garden Salad unclaimed</div>
+          <div class="notif-body">Your salad listing has 45 minutes left. No Nonprofit has claimed it yet.</div>
+          <div class="notif-time">18 min ago</div>
+        </div>
+        <div class="notif-unread"></div>
+      </div>
+      <div class="notif-card">
+        <div class="notif-icon-wrap" style="background:var(--fog);">✅</div>
+        <div class="notif-text">
+          <div class="notif-title">BBQ Pulled Pork picked up</div>
+          <div class="notif-body">Chicago Food Pantry collected your 13 lbs of BBQ Pulled Pork. 15 people will be served tonight.</div>
+          <div class="notif-time">3h ago</div>
+        </div>
+      </div>
+      <div class="notif-card">
+        <div class="notif-icon-wrap" style="background:#E8F8E8;">💚</div>
+        <div class="notif-text">
+          <div class="notif-title">New donation received</div>
+          <div class="notif-body">Feed Chicago Network received $20 from a donor. Meter updated.</div>
+          <div class="notif-time">Yesterday</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ PROFILE ═══ -->
+  <div class="screen" id="profile">
+    <div class="profile-head">
+      <div class="profile-avatar">🍽️</div>
+      <div class="profile-name">Green Leaf Bistro</div>
+      <div class="profile-role">Restaurant · Verified Partner</div>
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div style="background:var(--white);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-card);margin-bottom:12px;">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--cloud);display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:14px;font-weight:600;color:var(--bark);">🏠 My Listings</span>
+          <span style="color:var(--stone);">›</span>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--cloud);display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:14px;font-weight:600;color:var(--bark);">📊 Impact Report</span>
+          <span style="color:var(--stone);">›</span>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--cloud);display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:14px;font-weight:600;color:var(--bark);">🔔 Notification Settings</span>
+          <span style="color:var(--stone);">›</span>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--cloud);display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:14px;font-weight:600;color:var(--bark);">🛡 Verification Status</span>
+          <span class="badge badge-green">✓ Verified</span>
+        </div>
+        <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+          <span style="font-size:14px;font-weight:600;color:var(--bark);">❓ Help & Support</span>
+          <span style="color:var(--stone);">›</span>
+        </div>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-card"><div class="impact-num">148</div><div class="impact-label">Meals rescued total</div></div>
+        <div class="impact-card"><div class="impact-num">93 lbs</div><div class="impact-label">Food waste saved</div></div>
+      </div>
+      <button class="btn btn-secondary" style="margin-top:12px;" onclick="go('role-select')">Switch Role</button>
+      <button class="btn btn-outline" style="margin-top:8px;color:var(--urgent);border-color:var(--urgent);" onclick="go('splash')">Log Out</button>
+    </div>
+  </div>
+
+</div>
+<!-- END PHONE -->
+
+<!-- ─── SIDEBAR LEGEND ─── -->
+<div class="legend">
+  <h4>🌿 SaveFood Flows</h4>
+  <button class="legend-item" onclick="go('splash')"><div class="legend-dot" style="background:#fff;"></div>Splash / Onboarding</button>
+  <button class="legend-item" onclick="go('role-select')"><div class="legend-dot" style="background:#A0C080;"></div>Role Selection</button>
+  <div style="border-top:1px solid rgba(255,255,255,.15);margin:8px 0;padding-top:8px;font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.5px;">RESTAURANT</div>
+  <button class="legend-item" onclick="go('restaurant-dashboard')"><div class="legend-dot" style="background:#5A9E35;"></div>Dashboard</button>
+  <button class="legend-item" onclick="go('create-listing')"><div class="legend-dot" style="background:#7ABF52;"></div>Post Food</button>
+  <button class="legend-item" onclick="go('listing-status')"><div class="legend-dot" style="background:#A0C080;"></div>Pickup Status</button>
+  <div style="border-top:1px solid rgba(255,255,255,.15);margin:8px 0;padding-top:8px;font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.5px;"> Nonprofit</div>
+  <button class="legend-item" onclick="go('ngo-dashboard')"><div class="legend-dot" style="background:#2980B9;"></div>NGO Dashboard</button>
+  <button class="legend-item" onclick="go('ngo-route')"><div class="legend-dot" style="background:#3498DB;"></div>Navigation</button>
+  <button class="legend-item" onclick="go('fridge-detail')"><div class="legend-dot" style="background:#1B4D6B;"></div>Smart Fridge IoT</button>
+  <button class="legend-item" onclick="go('ngo-impact')"><div class="legend-dot" style="background:#27AE60;"></div>Impact Dashboard</button>
+  <div style="border-top:1px solid rgba(255,255,255,.15);margin:8px 0;padding-top:8px;font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.5px;">RECIPIENT</div>
+  <button class="legend-item" onclick="go('user-discovery')"><div class="legend-dot" style="background:#E67E22;"></div>Food Map</button>
+  <button class="legend-item" onclick="go('food-detail')"><div class="legend-dot" style="background:#F39C12;"></div>Food + Freshness</button>
+  <button class="legend-item" onclick="go('reserve-flow')"><div class="legend-dot" style="background:#D4A853;"></div>Reserve Flow</button>
+  <button class="legend-item" onclick="go('qr-checkin')"><div class="legend-dot" style="background:#E8A020;"></div>QR Check-in</button>
+  <button class="legend-item" onclick="go('fridge-user-view')"><div class="legend-dot" style="background:#1B4D6B;"></div>Fridge (User)</button>
+  <div style="border-top:1px solid rgba(255,255,255,.15);margin:8px 0;padding-top:8px;font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.5px;">DONOR</div>
+  <button class="legend-item" onclick="go('donor-discover')"><div class="legend-dot" style="background:#6B4226;"></div>Discover NGOs</button>
+  <button class="legend-item" onclick="go('donate-flow')"><div class="legend-dot" style="background:#A0522D;"></div>Donate</button>
+  <button class="legend-item" onclick="go('donate-success')"><div class="legend-dot" style="background:#27AE60;"></div>Donation Success</button>
+</div>
+
+<script>
+// ─── NAVIGATION ENGINE ───
+function go(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(screenId);
+  if (target) {
+    target.classList.add('active');
+    target.scrollTop = 0;
+  }
+}
+
+// ─── Nonprofit VIEW TOGGLE ───
+function ngoView(view) {
+  ['map','list','fridge'].forEach(v => {
+    document.getElementById('ngo-'+v+'-view').style.display = v===view ? (v==='map'?'flex':'block') : 'none';
+    document.getElementById('ngo-'+v+'-btn').classList.toggle('active', v===view);
+  });
+}
+
+// ─── COUNTDOWN TIMER ───
+let timerVal = 28*60+47;
+setInterval(() => {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  if (timerVal > 0) timerVal--;
+  const m = Math.floor(timerVal/60);
+  const s = timerVal%60;
+  el.textContent = m+':'+(s<10?'0':'')+s;
+  if (timerVal < 300) el.style.color = 'var(--urgent)';
+}, 1000);
+
+// ─── INIT ───
+go('splash');
+</script>
+</body>
+</html>
